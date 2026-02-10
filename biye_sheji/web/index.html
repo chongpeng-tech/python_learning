@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>红楼梦 NER + QA 控制台</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="bg-orb orb-a"></div>
+    <div class="bg-orb orb-b"></div>
+
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Deep Learning IE Workbench</p>
+        <h1>红楼梦 NER + 问答控制台</h1>
+        <p class="subtitle">
+          一个页面完成命名实体识别、SBERT 关系匹配、Cypher 生成和 Neo4j 查询。
+        </p>
+      </div>
+      <div class="status" id="health-box">
+        <p class="status-title">服务状态</p>
+        <p id="health-text">检查中...</p>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel" id="ner-panel">
+        <div class="panel-head">
+          <h2>1) NER 调试</h2>
+          <p>输入一句话，查看 BIO 标注和实体抽取结果。</p>
+        </div>
+
+        <form id="ner-form" class="form-grid">
+          <label class="field field-full">
+            <span>测试句子</span>
+            <textarea
+              id="ner-text"
+              rows="4"
+              placeholder="例如：贾宝玉在大观园见到林黛玉。"
+            >贾宝玉在大观园见到林黛玉。</textarea>
+          </label>
+
+          <label class="field">
+            <span>NER 模型目录</span>
+            <input id="ner-model-dir" type="text" value="checkpoints/bert_bilstm_crf" />
+          </label>
+
+          <label class="field">
+            <span>设备</span>
+            <select id="ner-device">
+              <option value="auto">auto（优先 MPS）</option>
+              <option value="mps">mps</option>
+              <option value="cpu">cpu</option>
+              <option value="cuda">cuda</option>
+            </select>
+          </label>
+
+          <button id="ner-submit" class="btn" type="submit">运行 NER</button>
+        </form>
+
+        <div class="result-grid">
+          <article class="result-card">
+            <h3>实体结果</h3>
+            <div id="ner-entities" class="chips muted">暂无结果</div>
+          </article>
+          <article class="result-card">
+            <h3>Token BIO</h3>
+            <div id="ner-tokens" class="token-flow muted">暂无结果</div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="qa-panel">
+        <div class="panel-head">
+          <h2>2) 问答查询</h2>
+          <p>SBERT 选关系 + NER 抽人名 + 自动生成 Cypher。</p>
+        </div>
+
+        <form id="qa-form" class="form-grid">
+          <label class="field field-full">
+            <span>问题</span>
+            <textarea
+              id="qa-question"
+              rows="3"
+              placeholder="例如：宝玉的父亲是哪个？"
+            >宝玉的父亲是哪个？</textarea>
+          </label>
+
+          <label class="field">
+            <span>关系列表（逗号分隔）</span>
+            <input id="qa-relations" type="text" value="父亲,母亲,住处,丫鬟" />
+          </label>
+
+          <label class="field">
+            <span>SBERT 模型</span>
+            <input id="qa-sbert-model" type="text" value="BAAI/bge-small-zh-v1.5" />
+          </label>
+
+          <label class="field">
+            <span>NER 模型目录</span>
+            <input id="qa-model-dir" type="text" value="checkpoints/bert_bilstm_crf" />
+          </label>
+
+          <label class="field">
+            <span>设备</span>
+            <select id="qa-device">
+              <option value="auto">auto（优先 MPS）</option>
+              <option value="mps">mps</option>
+              <option value="cpu">cpu</option>
+              <option value="cuda">cuda</option>
+            </select>
+          </label>
+
+          <label class="field field-full inline-check">
+            <input id="qa-run-neo4j" type="checkbox" checked />
+            <span>直接查询 Neo4j</span>
+          </label>
+
+          <div class="neo4j-box field-full" id="neo4j-fields">
+            <label class="field">
+              <span>Neo4j URI</span>
+              <input id="qa-neo4j-uri" type="text" value="bolt://localhost:7687" />
+            </label>
+            <label class="field">
+              <span>Neo4j 用户名</span>
+              <input id="qa-neo4j-user" type="text" value="neo4j" />
+            </label>
+            <label class="field">
+              <span>Neo4j 密码</span>
+              <input id="qa-neo4j-password" type="password" value="" />
+            </label>
+            <label class="field">
+              <span>数据库名</span>
+              <input id="qa-neo4j-database" type="text" value="neo4j" />
+            </label>
+          </div>
+
+          <button id="qa-submit" class="btn" type="submit">运行问答</button>
+        </form>
+
+        <div class="quick-actions">
+          <button class="ghost" data-question="宝玉的父亲是哪个？">父亲问题</button>
+          <button class="ghost" data-question="黛玉住在哪里？">住处问题</button>
+          <button class="ghost" data-question="宝玉的丫鬟是谁？">丫鬟问题</button>
+        </div>
+
+        <div class="result-grid">
+          <article class="result-card">
+            <h3>最终答案</h3>
+            <div id="qa-answer" class="chips muted">暂无结果</div>
+            <p id="qa-answer-source" class="muted"></p>
+          </article>
+
+          <article class="result-card">
+            <h3>识别人名</h3>
+            <div id="qa-names" class="chips muted">暂无结果</div>
+          </article>
+
+          <article class="result-card">
+            <h3>关系相似度</h3>
+            <div id="qa-ranking" class="ranking muted">暂无结果</div>
+          </article>
+
+          <article class="result-card result-wide">
+            <h3>Cypher</h3>
+            <pre id="qa-cypher" class="code muted">暂无结果</pre>
+            <h3>参数</h3>
+            <pre id="qa-params" class="code muted">暂无结果</pre>
+          </article>
+
+          <article class="result-card result-wide">
+            <h3>Neo4j 查询结果</h3>
+            <p id="qa-neo4j-error" class="error"></p>
+            <div class="table-wrap">
+              <table id="qa-table" class="result-table">
+                <thead>
+                  <tr>
+                    <th>subject</th>
+                    <th>relation</th>
+                    <th>object</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
