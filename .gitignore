@@ -1,9 +1,13 @@
-__pycache__/
-*.py[cod]
-*.class
-.venv/
-env/
-venv/
-.vscode/
-.DS_Store
-Thumbs.db
+﻿# Whitelist mode: ignore everything by default.
+*
+
+# Keep this whitelist file tracked.
+!.gitignore
+
+# Allow only the auto-learning snake project files we want to publish.
+!codex_windows/
+!codex_windows/codex_project/
+!codex_windows/codex_project/auto_learning_snake/
+!codex_windows/codex_project/auto_learning_snake/README.md
+!codex_windows/codex_project/auto_learning_snake/requirements.txt
+!codex_windows/codex_project/auto_learning_snake/snake_rl.py
