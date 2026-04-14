@@ -1,13 +1,84 @@
-﻿# Whitelist mode: ignore everything by default.
-*
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
 
-# Keep this whitelist file tracked.
-!.gitignore
+# C extensions
+*.so
 
-# Allow only the auto-learning snake project files we want to publish.
-!codex_windows/
-!codex_windows/codex_project/
-!codex_windows/codex_project/auto_learning_snake/
-!codex_windows/codex_project/auto_learning_snake/README.md
-!codex_windows/codex_project/auto_learning_snake/requirements.txt
-!codex_windows/codex_project/auto_learning_snake/snake_rl.py
+# Distribution / packaging
+.Python
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# Type checkers / linters
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+.ruff_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# PEP 582
+__pypackages__/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# IDEs / editors
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local secrets / env files
+.env
+.env.*
+*.local
